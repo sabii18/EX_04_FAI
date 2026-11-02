@@ -1,7 +1,8 @@
 <h1>ExpNo 4 : Implement A* search algorithm for a Graph</h1> 
 <h3> Date: 02/11/2026</h3>
 <h3>Name: SABEESHWARAN. P </h3>
-<h3>Register Number: 21222</h3>5230234<H3>Aim:</H3>
+<h3>Register Number: 212225230234
+<H3>Aim:</H3>
 <p>To ImplementA * Search algorithm for a Graph using Python 3.</p>
 <H3>Algorithm:</H3>
 
@@ -98,23 +99,18 @@ Path found: ['A', 'F', 'G', 'I', 'J']
 <hr>
 <h2>Sample Input</h2>
 <hr>
-6 6 <br>
-A B 2 <br>
-B C 1 <br>
-A E 3 <br>
-B G 9 <br>
-E D 6 <br>
-D G 1 <br>
-A 11 <br>
-B 6 <br>
-C 99 <br>
-E 7 <br>
-D 1 <br>
-G 0 <br>
+6 7 <br>
+Edge 1: A B 4 <br>
+Edge 2: A C 3 <br>
+Edge 3: B D 5 <br>
+Edge 4: C D 2 <br>
+Edge 5: C E 6 <br>
+Edge 6: D G 4 <br>
+Edge 7: E G 2 <br>
 <hr>
 <h2>Sample Output</h2>
 <hr>
-Path found: ['A', 'E', 'D', 'G']
+Path found: ['A', 'C', 'D', 'G']
 
 ## Program:
 ```python
@@ -301,8 +297,10 @@ else:
 ```
 
 ## Output:
-<img width="1686" height="631" alt="image" src="https://github.com/user-attachments/assets/2e92293c-cd75-4b50-8b40-365e297886b3" />
-<img width="798" height="631" alt="image" src="https://github.com/user-attachments/assets/a322c558-ab3a-459d-b6a4-0d3859b7274b" />
+<img width="517" height="587" alt="Screenshot 2026-11-02 083944" src="https://github.com/user-attachments/assets/695d8666-02e7-4ea9-a2c4-a2342e2c900f" />
+<img width="707" height="560" alt="Screenshot 2026-11-02 084001" src="https://github.com/user-attachments/assets/efa6ff86-1d5f-455f-8801-66034a139691" />
+<img width="782" height="606" alt="Screenshot 2026-11-02 084032" src="https://github.com/user-attachments/assets/f2cba9c0-5d6a-4767-9b7c-f1f2ef88b6af" />
+
 
 
 
