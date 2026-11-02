@@ -1,119 +1,180 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
 
 from collections import defaultdict
-H_dist ={}
-def aStarAlgo(start_node, stop_node):
-    open_set = set(start_node)
+import networkx as nx
+import matplotlib.pyplot as plt
+
+# A* Algorithm
+def a_star(graph, heuristic, start, goal):
+    open_set = {start}
     closed_set = set()
-    g = {}               #store distance from starting node
-    parents = {}         # parents contains an adjacency map of all nodes
-    #distance of starting node from itself is zero
-    g[start_node] = 0
-    #start_node is root node i.e it has no parent nodes
-    #so start_node is set to its own parent node
-    parents[start_node] = start_node
-    while len(open_set) > 0:
-        n = None
-        #node with lowest f() is found
-        for v in open_set:
-            if n == None or g[v] + heuristic(v) < g[n] + heuristic(n):
-                n = v
-        if n == stop_node or Graph_nodes[n] == None:
-            pass
-        else:
-            for (m, weight) in get_neighbors(n):
-                #nodes 'm' not in first and last set are added to first
-                #n is set its parent
-                if m not in open_set and m not in closed_set:
-                    open_set.add(m)
-                    parents[m] = n
-                    g[m] = g[n] + weight
-                #for each node m,compare its distance from start i.e g(m) to the
-                #from start through n node
-                else:
-                    if g[m] > g[n] + weight:
-                        #update g(m)
-                        g[m] = g[n] + weight
-                        #change parent of m to n
-                        parents[m] = n
-                        #if m in closed set,remove and add to open
-                        if m in closed_set:
-                            closed_set.remove(m)
-                            open_set.add(m)
-        if n == None:
-            TYPE THE CODE HERE TO PRINT AS Path does not exist!
-            
-            return None
-        
-        # if the current node is the stop_node
-        # then we begin reconstructin the path from it to the start_node
-        if n == stop_node:
+    g = {start: 0}
+    parent = {start: None}
+
+    while open_set:
+        current = min(
+            open_set,
+            key=lambda node: g[node] + heuristic[node]
+        )
+
+        if current == goal:
             path = []
-            while parents[n] != n:
-                path.append(n)
-                n = parents[n]
-            path.append(start_node)
+            while current is not None:
+                path.append(current)
+                current = parent[current]
+
             path.reverse()
-            print('Path found: {}'.format(path))
+            print("\nShortest Path:", " -> ".join(path))
+            print("Total Cost:", g[goal])
             return path
-        # remove n from the open_list, and add it to closed_list
-        # because all of his neighbors were inspected
-        open_set.remove(n)
-        closed_set.add(n)
-    print('Path does not exist!')
+
+        open_set.remove(current)
+        closed_set.add(current)
+
+        for neighbour, cost in graph[current]:
+            if neighbour in closed_set:
+                continue
+
+            new_cost = g[current] + cost
+
+            if new_cost >= g.get(neighbour, float('inf')):
+                continue
+
+            g[neighbour] = new_cost
+            parent[neighbour] = current
+            open_set.add(neighbour)
+
+    print("Path does not exist!")
     return None
 
-#define fuction to return neighbor and its distance
-#from the passed node
-def get_neighbors(v):
-       """
-    Retrieves a value from the Graph_nodes dictionary based on the provided key.
 
-    Parameters:
-    v (hashable): The key used to look up the value in the Graph_nodes dictionary.
-    Graph_nodes (dict): A dictionary where the keys are nodes and the values are associated data.
-
-    Returns:
-    The value associated with the key `v` in the Graph_nodes dictionary if the key exists; 
-    otherwise, returns None.
-    TYPE THE CODE HERE BY REFERRING TO THE ABOVE DESCRIPTION
-    """
-def heuristic(n):
-    return H_dist[n]
-
-
-#Describe your graph here
-'''Graph_nodes = {
-    'A': [('B', 6), ('F', 3)],
-    'B': [('A', 6), ('C', 3), ('D', 2)],
-    'C': [('B', 3), ('D', 1), ('E', 5)],
-    'D': [('B', 2), ('C', 1), ('E', 8)],
-    'E': [('C', 5), ('D', 8), ('I', 5), ('J', 5)],
-    'F': [('A', 3), ('G', 1), ('H', 7)],
-    'G': [('F', 1), ('I', 3)],
-    'H': [('F', 7), ('I', 2)],
-    'I': [('E', 5), ('G', 3), ('H', 2), ('J', 3)],
-}
-'''
+# Graph Creation
 graph = defaultdict(list)
-n,e = map(int,input().split())
+G = nx.Graph()
+
+n, e = map(int, input("Enter number of nodes and edges: ").split())
+
+print("\nEnter the edges (u v cost):")
+
 for i in range(e):
-    u,v,cost = map(str,input().split())
-    t=(v,float(cost))
-    graph[u].append(t)
-    t1=(u,float(cost))
-    graph[v].append(t1)
+    u, v, cost = input(f"Edge {i+1}: ").split()
+    cost = int(cost)
+
+    graph[u].append((v, cost))
+    graph[v].append((u, cost))
+
+    G.add_edge(u, v, weight=cost)
+
+
+# Display Adjacency List
+print("\nAdjacency List")
+
+for node in graph:
+    print(node, "->", graph[node])
+
+
+# Heuristic Values
+heuristic = {}
+
+print("\nEnter Heuristic Values")
+
 for i in range(n):
-    node,h=map(str,input().split())
-    H_dist[node]=float(h)
-print(H_dist)
+    node, h = input(f"{i+1}. Node Heuristic: ").split()
+    heuristic[node] = int(h)
 
-   
-Graph_nodes=graph
-print(graph)
-aStarAlgo('S', 'G')
+print("\nHeuristic Values")
+print(heuristic)
 
+
+# Draw Original Graph
+plt.figure(figsize=(8, 6))
+
+pos = nx.spring_layout(G, seed=20)
+
+nx.draw_networkx_nodes(
+    G, pos,
+    node_color="skyblue",
+    node_size=1800
+)
+
+nx.draw_networkx_labels(
+    G, pos,
+    font_size=12,
+    font_weight="bold"
+)
+
+nx.draw_networkx_edges(G, pos, width=2)
+
+edge_labels = nx.get_edge_attributes(G, 'weight')
+
+nx.draw_networkx_edge_labels(
+    G, pos,
+    edge_labels=edge_labels
+)
+
+plt.title("Original Graph")
+plt.axis("off")
+plt.show()
+
+
+# Start and Goal Nodes
+start = input("\nEnter Start Node: ")
+goal = input("Enter Goal Node: ")
+
+if start not in graph:
+    print("Invalid Start Node!")
+
+elif goal not in graph:
+    print("Invalid Goal Node!")
+
+elif start not in heuristic or goal not in heuristic:
+    print("Heuristic value missing for Start or Goal Node!")
+
+else:
+    shortest_path = a_star(graph, heuristic, start, goal)
+
+    # Highlight Shortest Path in Red
+    if shortest_path:
+        path_edges = []
+
+        for i in range(len(shortest_path) - 1):
+            path_edges.append(
+                (shortest_path[i], shortest_path[i + 1])
+            )
+
+        plt.figure(figsize=(8, 6))
+
+        nx.draw_networkx_nodes(
+            G, pos,
+            node_color="skyblue",
+            node_size=1800
+        )
+
+        nx.draw_networkx_labels(
+            G, pos,
+            font_size=12,
+            font_weight="bold"
+        )
+
+        # Draw all edges in gray
+        nx.draw_networkx_edges(
+            G, pos,
+            edge_color="gray",
+            width=2
+        )
+
+        # Highlight shortest path in red
+        nx.draw_networkx_edges(
+            G, pos,
+            edgelist=path_edges,
+            edge_color="red",
+            width=4
+        )
+
+        nx.draw_networkx_edge_labels(
+            G, pos,
+            edge_labels=edge_labels
+        )
+
+        plt.title("Shortest Path Highlighted (Red)")
+        plt.axis("off")
+        plt.show()
